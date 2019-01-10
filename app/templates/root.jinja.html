@@ -1,0 +1,18 @@
+{% extends "bootstrap/base.html" %}
+{% from "bootstrap/utils.html" import flashed_messages %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/fontawesome-free-5.0.6/web-fonts-with-css/css/fontawesome-all.min.css') }}" />
+{% endblock %}
+
+{% block content %}
+    {{ flashed_messages() }}
+    {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}

@@ -1,0 +1,2 @@
+# BadgeGenerator
+Generate badges

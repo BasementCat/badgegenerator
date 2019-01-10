@@ -1,0 +1,17 @@
+{
+    "DEBUG": false,
+    "SECRET_KEY": "Put a real secret key here",
+
+    "SITE_NAME": "BadgeGenerator",
+
+    "SQLALCHEMY_DATABASE_URI": "connector+dialect://user:pass@host/database",
+    "SQLALCHEMY_BINDS": {},
+    "SQLALCHEMY_TRACK_MODIFICATIONS": false,
+
+    "BOOTSTRAP_SERVE_LOCAL": false,
+
+    "UPLOAD_PATH": "Put a real upload path here",
+
+    "API_SECRET": "put a real secret key here",
+    "API_HMAC_HASH": "sha256"
+}

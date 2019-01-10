@@ -1,0 +1,19 @@
+{% extends "base-fullscreen.jinja.html" %}
+{% from "bootstrap/utils.html" import flashed_messages %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container form-login">
+    <h1 class="form-login-heading">Log In</h1>
+</div>
+{{ flashed_messages() }}
+<div class="container form-login">
+    <form class="form-login" method="POST">
+        {{ form.hidden_tag() }}
+        {{ wtf.form_field(form.username) }}
+        {{ wtf.form_field(form.password) }}
+        {{ wtf.form_field(form.remember_me) }}
+        {{ wtf.form_field(form.submit_login, button_map={'submit_login': 'success btn-block'}) }}
+    </form>
+</div> <!-- /container -->
+{% endblock %}

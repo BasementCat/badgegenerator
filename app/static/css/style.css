@@ -1,0 +1,24 @@
+/* .navbar.main-nav + * {
+    margin-top: 60px;
+} */
+
+body {
+    margin-top: 60px;
+}
+
+.row, .row-fluid {
+    overflow: auto;
+}
+
+.home-index .logo img {
+    max-width: 100%;
+    max-height: 150px;
+}
+
+.home-index .logo {
+    text-align: center;
+}
+
+.home-index h1 {
+    text-align: center;
+}

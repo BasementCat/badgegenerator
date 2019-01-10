@@ -1,0 +1,37 @@
+# TODO: versions for everything
+
+# Flask, and dependencies
+Flask==0.10.1
+
+# Flask plugins
+Flask-Script==2.0.3
+Flask-SQLAlchemy
+Flask-Bootstrap
+Flask-WTF
+Flask-Migrate
+Flask-Admin
+Flask-Login
+
+# MySQL and SA
+SQLAlchemy
+PyMySQL
+sqlalchemy-utils
+
+# To make sqlalchemy-utils play nice with Flask-Admin
+# flask-admin-utils
+# # ...and some dependencies
+# colour
+
+# Misc.
+# purl
+arrow
+# requests
+# slugify
+# inflect
+# qrcode
+tabulate
+passlib
+bcrypt
+# python-magic
+# pillow
+# marshmallow
