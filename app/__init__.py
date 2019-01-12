@@ -89,31 +89,13 @@ def create_app(config):
 
     from app.views import (
         index as index_view,
-    #     entity as entity_view,
         user as user_view,
-    #     asset as asset_view,
-    #     admin_ext as admin_ext_view,
-    #     scan as scan_view,
-    #     leaderboard as leaderboard_view,
-    #     # Method views
-    #     api as api_view,
-    #     # Special case
-    #     errors as error_view,
+        badge as badge_view,
         )
 
     app.register_blueprint(index_view.app)
-    # app.register_blueprint(entity_view.app)
     app.register_blueprint(user_view.app, url_prefix='/user')
-    # app.register_blueprint(asset_view.app, url_prefix='/asset')
-    # app.register_blueprint(admin_ext_view.app)
-    # app.register_blueprint(scan_view.app, url_prefix='/scan')
-    # app.register_blueprint(leaderboard_view.app, url_prefix='/leaderboard')
-    # for route, view in api_view.views.items():
-    #     app.add_url_rule(route, view_func=view)
-
-    # for codes, handler in error_view.error_handlers.items():
-    #     for code in codes:
-    #         app.errorhandler(code)(handler)
+    app.register_blueprint(badge_view.app, url_prefix='/badge')
 
     return app
 

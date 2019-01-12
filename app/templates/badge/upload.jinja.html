@@ -1,0 +1,21 @@
+{% extends "base.jinja.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+    {{ super() }}
+    <div class="col-sm-12">
+        <h1>CSV Upload</h1>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+    <div class="col-sm-12">
+        <h2>Fields</h2>
+        <table class="table table-striped">
+            <tr><th>foreign_id</th><td>ID in the external registration system - not required but recommended for cross-referencing</td></tr>
+            <tr><th>name</th><td>Badge name that will be printed on the badge</td></tr>
+            <tr><th>level</th><td>Level - must be one of: {{ valid_levels }}</td></tr>
+            <tr><th>flags</th><td>Space-separated list of flags, valid flags are: {{ valid_flags }}</td></tr>
+            <tr><th>age</th><td>Age of the attendee</td></tr>
+        </table>
+    </div>
+{% endblock %}
