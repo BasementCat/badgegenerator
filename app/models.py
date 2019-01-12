@@ -1,4 +1,5 @@
 import arrow
+import logging
 
 import sqlalchemy_utils as sau
 
@@ -11,6 +12,7 @@ from app import (
 
 
 sau.force_auto_coercion()
+logger = logging.getLogger(__name__)
 
 
 class Model(db.Model):
@@ -150,6 +152,78 @@ class BadgeTemplate(TimestampMixin, Model):
     def image_url(self):
         if self.image:
             return url_for('index.upload', filename=self.image)
+
+    @property
+    def is_leaf(self):
+        if getattr(self, '_is_leaf', None) is None:
+            self._is_leaf = BadgeTemplate.query.filter(BadgeTemplate.extends == self).count() == 0
+        return self._is_leaf
+
+    def matches(self, badge):
+        """\
+        Determine whether this template matches a particular badge.  The return
+        value is the specificity of the match.
+
+        Matches are:
+        - Badge age is within the range configured (1 match)
+        - Badge and template share a flag (1 match per shared flag)
+        - Badge level is assigned to the template (1 match)
+        - Badge is a leaf node (no children), but only if there are other matches (2 matches)
+        """
+
+        matches = []
+
+        age_weight = 3
+        min_age = self.min_age
+        max_age = self.max_age
+        if min_age is None:
+            min_age = 0
+            age_weight -= 1
+        if max_age is None:
+            max_age = 999
+            age_weight -= 1
+
+        # Note that min/max ages are both inclusive
+        if badge.age >= min_age and badge.age <= max_age:
+            matches.append(('age', age_weight))
+        else:
+            # If the badge age isn't in the range, no match is possible
+            matches.append(('age', -1))
+
+        if not self.flags:
+            # No flags is a single match
+            matches.append(('flags', 0.5))
+        else:
+            matching_flags = 0
+            for t_flag in self.flags:
+                for b_flag in badge.flags:
+                    if t_flag == b_flag:
+                        matching_flags += 1
+            if not matching_flags:
+                # If the template has flags but the badge doesn't match any, no match is possible
+                matches.append(('flags', -1))
+            else:
+                matches.append(('flags', matching_flags))
+
+        if not self.levels:
+            # No levels is a single match
+            matches.append(('level', 0.5))
+        else:
+            if badge.level not in self.levels:
+                # If the template has levels but the badge doesn't have one of them, no match is possible
+                matches.append(('level', -1))
+            else:
+                matches.append(('level', 1))
+
+        if matches:
+            if self.is_leaf:
+                matches.append(('leaf', 2))
+
+        # logger.debug("Match badge %s against template %s, matches: %s", badge.name, self.name, matches)
+
+        if len([v for v in matches if v[1] < 0]):
+            return 0
+        return sum((v[1] for v in matches))
 
 
 class BadgeToFlag(Model):

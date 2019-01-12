@@ -3,5 +3,38 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
-    foobar
+    <div class="row-fluid">
+        <div class="col-sm-6">lc</div>
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Print Queue</div>
+                <!-- <div class="panel-body"></div> -->
+
+                <table class="table table-striped">
+                    <tr>
+                        <th>Name</th>
+                        <th>Template</th>
+                    </tr>
+                    {% for badge in badges %}
+                        <tr>
+                            <td>{{ badge.name }}</td>
+                            <td>
+                                {% if badge_templates[badge.id] |length == 0 %}
+                                    <span class="label label-danger">No Matching Template</span>
+                                {% else %}
+                                    {% if badge_templates[badge.id] |length > 1 %}
+                                        <span class="label label-danger">Multiple Matches</span>
+                                    {% endif %}
+                                    {% for tpl in badge_templates[badge.id] %}
+                                        {{ tpl.name }}{{ ', ' if not loop.last }}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
