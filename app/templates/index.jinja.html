@@ -26,6 +26,7 @@
 {% endmacro %}
 
 {% block content %}
+    {{ super() }}
     <div class="row-fluid">
         <div class="col-sm-6 badge-template-list">
             {{ render_tpl_list(root_templates) }}
@@ -34,12 +35,32 @@
             <div class="panel panel-default">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Print Queue</div>
-                <!-- <div class="panel-body"></div> -->
+                <div class="panel-body">
+                    <form method="POST" action="{{ url_for('index.queue') }}">
+                        <a class="btn btn-xs btn-info" href="#">
+                            <i class="fa fa-print"></i>
+                            Print
+                        </a>
+                        <button class="btn btn-xs btn-primary" type="submit" name="action" value="queue-unprinted">
+                            <i class="fa fa-plus"></i>
+                            Queue Unprinted
+                        </button>
+                        <button class="btn btn-xs btn-warning" type="submit" name="action" value="queue-all">
+                            <i class="fa fa-asterisk"></i>
+                            Queue All
+                        </button>
+                        <button class="btn btn-xs btn-danger" type="submit" name="action" value="unqueue">
+                            <i class="fa fa-trash"></i>
+                            Clear Queue
+                        </button>
+                    </form>
+                </div>
 
                 <table class="table table-striped">
                     <tr>
                         <th>Name</th>
                         <th>Template</th>
+                        <th>&nbsp;</th>
                     </tr>
                     {% for badge in badges %}
                         <tr>
@@ -55,6 +76,15 @@
                                         {{ tpl.name }}{{ ', ' if not loop.last }}
                                     {% endfor %}
                                 {% endif %}
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('index.queue') }}">
+                                    <input type="hidden" name="id" value="{{ badge.id }}" />
+                                    <button class="btn btn-xs btn-danger" type="submit" name="action" value="unqueue">
+                                        <i class="fa fa-trash"></i>
+                                        Unqueue
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     {% endfor %}

@@ -9,10 +9,12 @@ from flask import (
     flash,
     current_app,
     Response,
+    request,
     )
 from flask_login import current_user, login_required
 
 from app.models import Badge, BadgeTemplate
+from app import db
 
 
 app = Blueprint('index', __name__)
@@ -33,6 +35,41 @@ def index():
             tpl_match = [v[0] for v in tpl_match if v[1] > 0 and v[1] == tpl_match[-1][1]]
         badge_templates[badge.id] = tpl_match
     return render_template('index.jinja.html', root_templates=root_templates, badges=badges, badge_templates=badge_templates)
+
+
+@app.route('/queue', methods=['POST'])
+@login_required
+def queue():
+    if request.form.get('action') == 'queue-unprinted':
+        unprinted = [b for b in Badge.query if not b.print_queued and not b.prints]
+        for b in unprinted:
+            b.print_queued = True
+            b.print_queued_by = current_user
+        db.session.commit()
+        flash("Queued {} badges for printing".format(len(unprinted)), 'success')
+    elif request.form.get('action') == 'queue-all':
+        unprinted = [b for b in Badge.query if not b.print_queued]
+        for b in unprinted:
+            b.print_queued = True
+            b.print_queued_by = current_user
+        db.session.commit()
+        flash("Queued {} badges for printing".format(len(unprinted)), 'success')
+    elif request.form.get('action') == 'unqueue':
+        badges = Badge.query.filter(Badge.print_queued == True)
+        if request.form.get('id'):
+            badges = badges.filter(Badge.id == request.form.get('id'))
+        badges = badges.all()
+
+        for b in badges:
+            b.print_queued = False
+            b.print_queued_by = None
+
+        db.session.commit()
+        flash("Unqueued {} badges".format(len(badges)), 'success')
+    else:
+        flash("Invalid action", 'danger')
+
+    return redirect(url_for('.index'))
 
 
 @app.route('/<path:filename>', methods=['GET'])
