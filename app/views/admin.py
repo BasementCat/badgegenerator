@@ -61,6 +61,9 @@ class FlagLevelModelView(CustomModelView):
 class BadgeTemplateModelView(CustomModelView):
     def _image_validator(form, field):
         if field.data:
+            if isinstance(field.data, str):
+                return True
+
             ext = imghdr.what(field.data)
             if not ext:
                 raise ValidationError("Not an image")
@@ -108,6 +111,7 @@ class BadgeTemplateModelView(CustomModelView):
         r.FieldSet(
             [
                 r.Text("Determine how badge templates are matched to badges, the most specific matching template is applied"),
+                'no_match',
                 'min_age',
                 'max_age',
                 'levels',

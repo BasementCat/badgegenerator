@@ -109,6 +109,7 @@ class BadgeTemplate(TimestampMixin, Model):
     extends = db.relationship('BadgeTemplate', remote_side=[id], backref='extended_by')
     min_age = db.Column(db.Integer())
     max_age = db.Column(db.Integer())
+    no_match = db.Column(db.Boolean(), nullable=False, default=False, server_default='0')
     image = db.Column(db.UnicodeText())
 
     badge_name_top = db.Column(db.Float())
@@ -170,6 +171,9 @@ class BadgeTemplate(TimestampMixin, Model):
         - Badge level is assigned to the template (1 match)
         - Badge is a leaf node (no children), but only if there are other matches (2 matches)
         """
+
+        if self.no_match:
+            return 0
 
         matches = []
 
