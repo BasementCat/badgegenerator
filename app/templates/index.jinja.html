@@ -2,9 +2,34 @@
 {% from "bootstrap/utils.html" import flashed_messages %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% macro render_tpl_list(tpl_list) %}
+    {% if tpl_list |length %}
+        <ul class="media-list">
+            {% for tpl in tpl_list %}
+                <li class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" src="{{ tpl.image or url_for('static', filename='img/blank-badge.jpg') }}" alt="">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <div>
+                            <h4 class="media-heading">{{ tpl.name }}</h4>
+                            <p>{{ tpl.description }}</p>
+                        </div>
+                        {{ render_tpl_list(tpl.extended_by) }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+
 {% block content %}
     <div class="row-fluid">
-        <div class="col-sm-6">lc</div>
+        <div class="col-sm-6 badge-template-list">
+            {{ render_tpl_list(root_templates) }}
+        </div>
         <div class="col-sm-6">
             <div class="panel panel-default">
                 <!-- Default panel contents -->

@@ -22,3 +22,10 @@ body {
 .home-index h1 {
     text-align: center;
 }
+
+.badge-template-list img {
+    max-height: 75px;
+}
+.badge-template-list .media-body >div {
+    min-height: 75px;
+}

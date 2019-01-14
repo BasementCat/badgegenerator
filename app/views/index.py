@@ -22,6 +22,7 @@ mimetypes.init()
 @app.route('/', methods=['GET'])
 @login_required
 def index():
+    root_templates = BadgeTemplate.query.filter(BadgeTemplate.extends == None).all()
     templates = BadgeTemplate.query.all()
     badges = Badge.query.filter(Badge.print_queued == True).all()
     badge_templates = {}
@@ -31,7 +32,7 @@ def index():
             tpl_match = list(sorted(tpl_match, key=lambda v: v[1]))
             tpl_match = [v[0] for v in tpl_match if v[1] > 0 and v[1] == tpl_match[-1][1]]
         badge_templates[badge.id] = tpl_match
-    return render_template('index.jinja.html', badges=badges, badge_templates=badge_templates)
+    return render_template('index.jinja.html', root_templates=root_templates, badges=badges, badge_templates=badge_templates)
 
 
 @app.route('/<path:filename>', methods=['GET'])
