@@ -1,0 +1,99 @@
+{%- macro render_css(tpl_list) -%}
+    {% for tpl in tpl_list -%}
+    {% for attr in ('badge_name', 'badge_number', 'level', 'timestamp', 'arbitrary_text') -%}
+    .badge.tplid_{{ tpl.id }} .{{ attr }} {
+        {% for val in ('top', 'left', 'width', 'height') -%}
+        {% set key = attr ~ '_' ~ val -%}
+        {% if tpl[key] is not none -%}
+        {{ val }}: {{ tpl[key] }}in;
+        {% endif %}
+        {% endfor %}
+    }
+    {% endfor %}
+    {% if tpl.css is not none -%}
+    {{ tpl.css }}
+    {% endif %}
+    {{ render_css(tpl.extended_by) }}
+    {% endfor %}
+{%- endmacro -%}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/print.css') }}" />
+        <style>
+            {{ render_css(root_templates) }}
+        </style>
+    </head>
+    <body>
+        {% for badge_page in badges %}
+            <div class="page">
+                {% for badge_col in badge_page %}
+                    <div class="column">
+                        {% for badge in badge_col %}
+                            {% set tpl = badge_templates[badge.id].cascaded_props %}
+                            <div class="badge {{ tpl.classes }}">
+                                <img src="{{ tpl.image }}" />
+                                <span class="badge_name">
+                                    {{ badge.name }}
+                                </span>
+                                <span class="level">
+                                    {{ tpl.level or badge.level }}{{ tpl.level_append or '' }}
+                                </span>
+                                <span class="badge_number">
+                                    <span class="marker">#</span>{{ badge.id }}
+                                </span>
+                                <span class="arbitrary_text">
+                                    {{ tpl.arbitrary_text or '' }}
+                                </span>
+                                <span class="timestamp">
+                                    {{ tpl.timestamp or '' }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <script src="{{bootstrap_find_resource('jquery.js', cdn='jquery')}}"></script>
+        <script>
+            $('div.badge').each(function() {
+                var badge = $(this);
+                $(this).find('.crop.vt').css({width: (badge.width() - 2) + 'px'});
+                $(this).find('.crop.hz').css({height: (badge.height() - 2) + 'px'});
+            });
+
+            $('.badge_name').each(function() {
+                var box = $(this);
+                var span = $('<span/>')
+                    .css({
+                        whiteSpace: 'nowrap',
+                        display: 'inline-block',
+                    })
+                    .html(box.html());
+                box.html(span);
+
+                var orig_fontsize = fontsize = parseFloat(box.css('font-size').replace(/[^\d.]+$/, ''));
+
+                while (span.outerWidth() < box.width() && span.outerHeight() < box.height()) {
+                    if (fontsize >= orig_fontsize * 2) break;
+                    fontsize += 1;
+                    span.css({fontSize: fontsize + 'px'});
+                }
+
+                while (span.outerWidth() > box.width() && span.outerHeight() > box.height()) {
+                    if (fontsize <= orig_fontsize / 2) break;
+                    fontsize -= 1;
+                    span.css({fontSize: fontsize + 'px'});
+                }
+
+                span.css({
+                    height: '100%',
+                    maxWidth: '100%',
+                    'overflow-x': 'hidden',
+                    'overflow-y': 'visible',
+                });
+            });
+        </script>
+    </body>
+</html>

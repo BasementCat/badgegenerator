@@ -160,6 +160,85 @@ class BadgeTemplate(TimestampMixin, Model):
             self._is_leaf = BadgeTemplate.query.filter(BadgeTemplate.extends == self).count() == 0
         return self._is_leaf
 
+    @property
+    def inheritance_chain(self):
+        b = self
+        while b:
+            yield b
+            b = b.extends
+
+    @property
+    def cascaded_props(self):
+        out = {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'extends_id': self.extends_id,
+            'extends': self.extends,
+            'min_age': self.min_age,
+            'max_age': self.max_age,
+            'no_match': self.no_match,
+            # Cascaded via CSS
+            'badge_name_top': self.badge_name_top,
+            'badge_name_left': self.badge_name_left,
+            'badge_name_width': self.badge_name_width,
+            'badge_name_height': self.badge_name_height,
+            'badge_number_top': self.badge_number_top,
+            'badge_number_left': self.badge_number_left,
+            'badge_number_width': self.badge_number_width,
+            'badge_number_height': self.badge_number_height,
+            'level_top': self.level_top,
+            'level_left': self.level_left,
+            'level_width': self.level_width,
+            'level_height': self.level_height,
+            'timestamp_top': self.timestamp_top,
+            'timestamp_left': self.timestamp_left,
+            'timestamp_width': self.timestamp_width,
+            'timestamp_height': self.timestamp_height,
+            'arbitrary_text_top': self.arbitrary_text_top,
+            'arbitrary_text_left': self.arbitrary_text_left,
+            'arbitrary_text_width': self.arbitrary_text_width,
+            'arbitrary_text_height': self.arbitrary_text_height,
+            # TODO: these should allow for an empty value to be properly overridden
+            'timestamp_append_to_level': self.timestamp_append_to_level,
+            'arbitrary_text_override_level': self.arbitrary_text_override_level,
+            # Real overrides
+            'timestamp_format': None,
+            'arbitrary_text': None,
+            'image': None,
+            # Fake properties
+            'level': None,
+            'timestamp': None,
+            'level_append': None,
+            'classes': '',
+        }
+        for tpl in self.inheritance_chain:
+            out['classes'] += ' tplid_' + str(tpl.id)
+            if tpl.timestamp_append_to_level:
+                out['timestamp_append_to_level'] = tpl.timestamp_append_to_level
+            if tpl.arbitrary_text_override_level:
+                out['arbitrary_text_override_level'] = tpl.arbitrary_text_override_level
+            if tpl.timestamp_format and not out['timestamp_format']:
+                out['timestamp_format'] = tpl.timestamp_format
+            if tpl.arbitrary_text and not out['arbitrary_text']:
+                out['arbitrary_text'] = tpl.arbitrary_text
+            if tpl.image and not out['image']:
+                out['image'] = tpl.image
+
+        if out['timestamp_format']:
+            out['timestamp'] = arrow.now().format(out['timestamp_format'])
+
+        if out['arbitrary_text'] and out['arbitrary_text_override_level']:
+            out['level'] = out['arbitrary_text']
+            out['arbitrary_text'] = None
+
+        if out['timestamp'] and out['timestamp_append_to_level']:
+            out['level_append'] = ' ' + out['timestamp']
+            out['timestamp'] = None
+
+        return out
+
+
     def matches(self, badge):
         """\
         Determine whether this template matches a particular badge.  The return

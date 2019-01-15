@@ -21,10 +21,7 @@ app = Blueprint('index', __name__)
 mimetypes.init()
 
 
-@app.route('/', methods=['GET'])
-@login_required
-def index():
-    root_templates = BadgeTemplate.query.filter(BadgeTemplate.extends == None).all()
+def match_templates(single=False):
     templates = BadgeTemplate.query.all()
     badges = Badge.query.filter(Badge.print_queued == True).all()
     badge_templates = {}
@@ -33,7 +30,26 @@ def index():
         if tpl_match:
             tpl_match = list(sorted(tpl_match, key=lambda v: v[1]))
             tpl_match = [v[0] for v in tpl_match if v[1] > 0 and v[1] == tpl_match[-1][1]]
-        badge_templates[badge.id] = tpl_match
+        badge_templates[badge.id] = tpl_match[-1] if single else tpl_match
+    return badges, badge_templates
+
+
+def group_count(data, n):
+    out = []
+    for v in data:
+        out.append(v)
+        if len(out) == n:
+            yield out
+            out = []
+    if out:
+        yield out
+
+
+@app.route('/', methods=['GET'])
+@login_required
+def index():
+    root_templates = BadgeTemplate.query.filter(BadgeTemplate.extends == None).all()
+    badges, badge_templates = match_templates()
     return render_template('index.jinja.html', root_templates=root_templates, badges=badges, badge_templates=badge_templates)
 
 
@@ -70,6 +86,16 @@ def queue():
         flash("Invalid action", 'danger')
 
     return redirect(url_for('.index'))
+
+
+@app.route('/print', methods=['GET'])
+@login_required
+def print():
+    root_templates = BadgeTemplate.query.filter(BadgeTemplate.extends == None).all()
+    badges, badge_templates = match_templates(single=True)
+    badges = list(group_count(badges, 6))
+    badges = list(map(lambda g: list(group_count(g, 3)), badges))
+    return render_template('badge/print.jinja.html', root_templates=root_templates, badges=badges, badge_templates=badge_templates)
 
 
 @app.route('/<path:filename>', methods=['GET'])

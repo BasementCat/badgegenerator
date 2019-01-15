@@ -37,7 +37,7 @@
                 <div class="panel-heading">Print Queue</div>
                 <div class="panel-body">
                     <form method="POST" action="{{ url_for('index.queue') }}">
-                        <a class="btn btn-xs btn-info" href="#">
+                        <a class="btn btn-xs btn-info" href="{{ url_for('index.print') }}" target="_blank">
                             <i class="fa fa-print"></i>
                             Print
                         </a>
