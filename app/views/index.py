@@ -13,7 +13,7 @@ from flask import (
     )
 from flask_login import current_user, login_required
 
-from app.models import Badge, BadgeTemplate
+from app.models import Badge, BadgeTemplate, BadgePrint
 from app import db
 
 
@@ -92,7 +92,25 @@ def queue():
 @login_required
 def print():
     root_templates = BadgeTemplate.query.filter(BadgeTemplate.extends == None).all()
-    badges, badge_templates = match_templates(single=True)
+    if request.args.get('tpl'):
+        badge_templates = {0: BadgeTemplate.query.get(request.args['tpl'])}
+        badges = [
+            {
+                'id': 0,
+                'name': '',
+                'level': '',
+            }
+            for _ in range(int(request.args['count']))
+        ]
+    else:
+        badges, badge_templates = match_templates(single=True)
+        for b in badges:
+            db.session.add(BadgePrint(
+                badge=b,
+                queued_by=b.print_queued_by,
+                printed_by=current_user,
+            ))
+        db.session.commit()
     badges = list(group_count(badges, 6))
     badges = list(map(lambda g: list(group_count(g, 3)), badges))
     return render_template('badge/print.jinja.html', root_templates=root_templates, badges=badges, badge_templates=badge_templates)

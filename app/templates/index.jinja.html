@@ -16,6 +16,12 @@
                         <div>
                             <h4 class="media-heading">{{ tpl.name }}</h4>
                             <p>{{ tpl.description }}</p>
+                            <div>
+                                <button class="btn btn-xs btn-info print-many" data-tpl-id="{{ tpl.id }}">
+                                    <i class="fa fa-print"></i>
+                                    Print Many
+                                </button>
+                            </div>
                         </div>
                         {{ render_tpl_list(tpl.extended_by) }}
                     </div>
@@ -37,7 +43,7 @@
                 <div class="panel-heading">Print Queue</div>
                 <div class="panel-body">
                     <form method="POST" action="{{ url_for('index.queue') }}">
-                        <a class="btn btn-xs btn-info" href="{{ url_for('index.print') }}" target="_blank">
+                        <a class="btn btn-xs btn-info" href="{{ url_for('index.print') }}" target="_blank" id="print-queue">
                             <i class="fa fa-print"></i>
                             Print
                         </a>
@@ -49,7 +55,7 @@
                             <i class="fa fa-asterisk"></i>
                             Queue All
                         </button>
-                        <button class="btn btn-xs btn-danger" type="submit" name="action" value="unqueue">
+                        <button class="btn btn-xs btn-danger" type="submit" name="action" value="unqueue" id="clear-queue">
                             <i class="fa fa-trash"></i>
                             Clear Queue
                         </button>
@@ -92,4 +98,24 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $('.print-many').on('click', function(e) {
+            var tpl_id = $(e.currentTarget).attr('data-tpl-id');
+            var count = prompt("Print how many?");
+            var win = window.open('/print?tpl=' + tpl_id + '&count=' + count, '_blank');
+        });
+        $('#print-queue').on('click', function(e) {
+            var cb = function() {
+                window.removeEventListener('focus', cb);
+                if (confirm("Clear print queue?")) {
+                    $('#clear-queue').click();
+                }
+            };
+            window.addEventListener('focus', cb);
+        });
+    </script>
 {% endblock %}
