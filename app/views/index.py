@@ -70,6 +70,15 @@ def queue():
             b.print_queued_by = current_user
         db.session.commit()
         flash("Queued {} badges for printing".format(len(unprinted)), 'success')
+    elif request.form.get('action') == 'queue':
+        badge = Badge.query.filter(Badge.print_queued == False, Badge.id == request.form.get('id')).first()
+        if badge:
+            badge.print_queued = True
+            badge.print_queued_by = current_user
+            db.session.commit()
+            flash("Queued {} for printing".format(badge.name), 'success')
+        else:
+            flash("No such badge", 'danger')
     elif request.form.get('action') == 'unqueue':
         badges = Badge.query.filter(Badge.print_queued == True)
         if request.form.get('id'):
@@ -85,7 +94,7 @@ def queue():
     else:
         flash("Invalid action", 'danger')
 
-    return redirect(url_for('.index'))
+    return redirect(request.form.get('next') or url_for('.index'))
 
 
 @app.route('/print', methods=['GET'])

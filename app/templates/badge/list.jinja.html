@@ -1,0 +1,89 @@
+{% extends "base.jinja.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{# TODO: don't hardcode timezone #}
+{%- macro render_print(print) -%}
+    {{ print.printed_by.username }} @{{ print.created_at.to('America/Chicago').format('YYYY-MM-DD HH:mm:ss') }}
+{%- endmacro -%}
+
+{% block content %}
+    {{ super() }}
+    <div class="col-sm-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Badge Number</th>
+                    <th>Foreign ID</th>
+                    <th>Name</th>
+                    <th>Level</th>
+                    <th>Flags</th>
+                    <th>Age</th>
+                    <th>Queued</th>
+                    <th>Prints</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for badge in badges %}
+                    <tr>
+                        <td>{{ badge.id }}</td>
+                        <td>{{ badge.foreign_id }}</td>
+                        <td>{{ badge.name }}</td>
+                        <td>{{ badge.level.name }}</td>
+                        <td>{% for flag in badge.flags %}<span class="label label-info">{{ flag.name }}</span>{% endfor %}</td>
+                        <td>
+                            {% if badge.under_13 %}
+                                <span class="label label-danger">Under 13</span>
+                            {% elif badge.under_18 %}
+                                <span class="label label-warning">Under 18</span>
+                            {% else %}
+                                {{ badge.real_age }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if badge.print_queued %}
+                                <label class="label label-success">{{ badge.print_queued_by.username }}</label>
+                            {% else %}
+                                <label class="label label-danger">No</label>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if badge.prints %}
+                                {{ render_print(badge.prints[-1]) }}
+                                {% if badge.prints |length > 1 %}
+                                    <button class="btn btn-xs btn-primary prints" data-prints="{% for p in badge.prints %}{{ render_print(p) }}{{ '' if loop.last else '|' }}{% endfor %}">+{{ (badge.prints |length) - 1 }}</label>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('index.queue') }}">
+                                <input type="hidden" name="id" value="{{ badge.id }}" />
+                                <input type="hidden" name="next" value="{{ url_for('badge.list') }}" />
+                                {% if badge.print_queued %}
+                                    <button class="btn btn-xs btn-danger" type="submit" name="action" value="unqueue">
+                                        <i class="fa fa-trash"></i>
+                                        Unqueue
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-xs btn-primary" type="submit" name="action" value="queue">
+                                        <i class="fa fa-plus"></i>
+                                        Queue
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $('.prints').on('click', function(e) {
+            alert($(e.currentTarget).attr('data-prints').replace('|', '\n'));
+        });
+    </script>
+{% endblock %}

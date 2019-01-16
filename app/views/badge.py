@@ -72,3 +72,9 @@ def upload():
     valid_levels = ', '.join(levels.keys())
     valid_flags = ', '.join(flags.keys())
     return render_template('badge/upload.jinja.html', form=form, valid_levels=valid_levels, valid_flags=valid_flags)
+
+
+@app.route('/list', methods=['GET'])
+def list():
+    badges = Badge.query
+    return render_template('badge/list.jinja.html', badges=badges)
