@@ -60,11 +60,6 @@ file may be in Excel-compatible CSV format.  The fields and their meanings are l
 
 There are several sections in the administration interface corresponding to the different datatypes.
 
-#### User
-
-Users are listed here, and though they can technically be created, use the command described above to add new users or to
-modify existing users.
-
 #### Flag
 
 Flags are bits of information about badges that are not the name, age, or level.  Examples of flag usage are to denote a

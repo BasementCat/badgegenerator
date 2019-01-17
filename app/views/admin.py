@@ -1,7 +1,4 @@
 from collections import OrderedDict
-# import base64
-# import re
-# import json
 import os
 import imghdr
 
@@ -10,31 +7,14 @@ from flask_admin.form.upload import FileUploadField
 from flask_admin.form import rules as r
 
 from flask import current_app
-# from flask import (
-#     redirect,
-#     url_for,
-#     request,
-#     )
 from flask_login import current_user
-# from flask.ext.codemirror.fields import CodeMirrorField
 
 from wtforms import ValidationError
-# from wtforms.fields.core import UnboundField
-# from wtforms.validators import Optional
 
 from markupsafe import Markup
-# import purl
 
 from app import admin
 from app import models
-# from app.forms.custom_fields import AssetUploadField, ClaimInfoField
-# from app.lib.users import safe_redirect_url
-# from app.lib.fileupload import FileUpload
-
-# import arrow
-# import requests
-
-# import sqlalchemy_utils as sau
 
 from app import db
 
@@ -46,12 +26,6 @@ class CustomModelView(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('user.login'))
-
-
-class UserModelView(CustomModelView):
-    column_formatters = {
-        'password': lambda v, c, m, n: 'Yes' if m.password else 'No'
-    }
 
 
 class FlagLevelModelView(CustomModelView):
@@ -192,7 +166,6 @@ class BadgeTemplateModelView(CustomModelView):
 
 
 views = OrderedDict([
-    ('User', UserModelView(models.User, db.session, endpoint='admin.user', url='user')),
     ('Flag', FlagLevelModelView(models.Flag, db.session, endpoint='admin.flag', url='flag')),
     ('Level', FlagLevelModelView(models.Level, db.session, endpoint='admin.level', url='level')),
     ('BadgeTemplate', BadgeTemplateModelView(models.BadgeTemplate, db.session, endpoint='admin.badge_template', url='badge_template')),
