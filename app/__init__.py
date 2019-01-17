@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 db = SQLAlchemy()
-admin = Admin(name='con-quest', template_mode='bootstrap3', base_template='flask_admin_base.jinja.html')
+admin = Admin(name='BadgeGenerator', template_mode='bootstrap3', base_template='flask_admin_base.jinja.html')
 login_manager = LoginManager()
 bootstrap = Bootstrap()
 
@@ -33,8 +33,8 @@ login_manager.login_view = "user.login"
 
 class Config(object):
     CONFIG_DIRS = [
-        os.path.join(os.sep, 'etc', 'con-quest'),
-        os.path.expanduser(os.path.join('~', '.config', 'con-quest')),
+        os.path.join(os.sep, 'etc', 'badgegenerator'),
+        os.path.expanduser(os.path.join('~', '.config', 'badgegenerator')),
         os.path.join(os.path.dirname(__file__), '..', 'config'),
     ]
 
