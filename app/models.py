@@ -223,7 +223,7 @@ class BadgeTemplate(TimestampMixin, Model):
             if tpl.arbitrary_text and not out['arbitrary_text']:
                 out['arbitrary_text'] = tpl.arbitrary_text
             if tpl.image and not out['image']:
-                out['image'] = tpl.image
+                out['image'] = tpl.image_url
 
         if out['timestamp_format']:
             out['timestamp'] = arrow.now().format(out['timestamp_format'])

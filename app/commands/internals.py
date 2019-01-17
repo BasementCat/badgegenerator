@@ -15,7 +15,7 @@ def list_routes():
     output = []
     for rule in get_app().url_map.iter_rules():
         methods = ','.join(rule.methods)
-        output.append(map(urllib.unquote, [rule.endpoint, methods, str(rule)]))
+        output.append(map(urllib.parse.unquote, [rule.endpoint, methods, str(rule)]))
     
     print(tabulate(output, headers=['Endpoint', 'Methods', 'URL']))
 

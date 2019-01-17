@@ -125,7 +125,7 @@ def print():
     return render_template('badge/print.jinja.html', root_templates=root_templates, badges=badges, badge_templates=badge_templates)
 
 
-@app.route('/<path:filename>', methods=['GET'])
+@app.route('/uploads/<path:filename>', methods=['GET'])
 def upload(filename):
     mime, _ = mimetypes.guess_type(os.path.basename(filename), strict=False)
     with open(os.path.join(current_app.config['UPLOAD_PATH'], filename), 'rb') as fp:

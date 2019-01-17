@@ -18,6 +18,9 @@ from app.models import (
 @script_manager.option('--password', help="User's password")
 @script_manager.option('--ask-password', action='store_true', help="Ask for the user's password")
 def user(add, edit, delete, username, password, ask_password):
+    """\
+    Add, edit, and delete users.
+    """
     if add or edit:
         with db.session.no_autoflush:
             if add:
