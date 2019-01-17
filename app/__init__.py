@@ -91,11 +91,14 @@ def create_app(config):
         index as index_view,
         user as user_view,
         badge as badge_view,
+        api as api_view,
         )
 
     app.register_blueprint(index_view.app)
     app.register_blueprint(user_view.app, url_prefix='/user')
     app.register_blueprint(badge_view.app, url_prefix='/badge')
+    for route, view in api_view.views.items():
+        app.add_url_rule(route, view_func=view)
 
     return app
 

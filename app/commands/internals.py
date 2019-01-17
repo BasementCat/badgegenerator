@@ -1,6 +1,6 @@
 import os
 
-from flask import url_for
+from flask import url_for, current_app
 
 from tabulate import tabulate
 
@@ -47,3 +47,39 @@ def runserver(host, port, debugger, reloader, threaded, processes, ssl):
         )
 
     get_app().run(**args)
+
+
+@script_manager.option('-m', '--method', default="POST", help="Use this method - only POST is supported, anything else should produce an error")
+@script_manager.option('-i', '--foreign-id', required=True, help="Foreign ID for the badge")
+@script_manager.option('-n', '--name', required=True, help="Badge name")
+@script_manager.option('-l', '--level', required=True, help="Badge level")
+@script_manager.option('-a', '--age', required=True, type=int, help="Age")
+@script_manager.option('-f', '--flag', action='append', dest='flags', help="Flags")
+def badgetest(method, foreign_id, name, level, age, flags):
+    import requests, hmac, json, hashlib
+    url = 'http://localhost:8000/api/badge'
+    body = {'foreign_id': foreign_id, 'name': name, 'level': level, 'age': age}
+    if flags:
+        body['flags'] = flags
+    body = json.dumps(body)
+
+    h = hmac.new(
+        current_app.config.get('API_SECRET').encode('utf-8'),
+        digestmod=getattr(hashlib, current_app.config.get('API_HMAC_HASH'))
+    )
+    h.update(method.upper().encode('utf-8'))
+    h.update(url.encode('utf-8'))
+    h.update(body.encode('utf-8'))
+    h = h.hexdigest()
+
+    res = getattr(requests, method.lower())(
+        url,
+        data=body,
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': 'HMAC ' + h,
+        }
+    )
+
+    print(res.status_code)
+    print(res.text)

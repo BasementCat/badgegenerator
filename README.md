@@ -13,7 +13,7 @@ Generate badges
     * ./config/
   3. Edit the config file to override settings (defaults are in ./config/config-base.json), the bare minimum is:
     * Set DEBUG to true in dev, default is false
-    * Set a real random SECRET_KEY
+    * Set a real random SECRET_KEY and API_SECRET (they should be different)
     * Set SQLALCHEMY_DATABASE_URI to point to your database - mysql+pymysql://<username>:<password>@<hostname>/<dbname>
     * Set UPLOAD_PATH to a directory that the application will have permission to write to
   4. Create a virtual environment (virtualenv -p python3 <location>)
@@ -84,3 +84,33 @@ that targeting information, like min/max age, and assigned levels/flags are not 
 #### Badge
 
 Individual badges may be created here, if necessary.
+
+## API
+
+An API exists to create and modify certain resources.
+
+### Authentication
+
+To authenticate to the API send the Authorization header with a value of "HMAC <hmac>" where <hmac> is a HMAC consisting of:
+
+  1. API secret key (this is passed to your HMAC generation library, and not directly appended to data)
+  2. Request method
+  3. Full request URL
+  4. JSON-encoded request body
+
+### Badge API
+
+The badge API, at /api/badge, is currently the only supported API.  Properties are:
+
+  * foreign_id (required) - ID of the badge in the external registration system
+  * name (required) - Name to be printed on the badge
+  * level (required) - One of the configured levels
+  * age (required) - Age of the attendee
+  * flags (optional) - A list of configured flags to apply
+  * queue (optional, default true) - If not set to false, the badge is immediately queued for printing
+
+All requests are via POST, if a badge with the given foreign ID exists, it is updated.  The response gives the badge number:
+
+    {"result": {"badge_number": <badge-number>}}
+
+Standard HTTP response codes are used to indicate errors.
