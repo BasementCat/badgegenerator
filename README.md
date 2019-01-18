@@ -114,3 +114,13 @@ All requests are via POST, if a badge with the given foreign ID exists, it is up
     {"result": {"badge_number": <badge-number>}}
 
 Standard HTTP response codes are used to indicate errors.
+
+## Backups
+
+Backups of the system are simple, all that is required is to back up the database and the configured uploads directory.
+
+## Multiple Events
+
+The system has no concept of multiple events, so when usage for a new event is required, it is recommended to back up
+the old data and perform the database setup again.  It is also possible to truncate the badges table to start over, however
+it is important to ensure the autoincrement ID is reset as this is used for the badge number.
