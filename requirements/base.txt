@@ -17,21 +17,9 @@ SQLAlchemy
 PyMySQL
 sqlalchemy-utils
 
-# To make sqlalchemy-utils play nice with Flask-Admin
-# flask-admin-utils
-# # ...and some dependencies
-# colour
-
 # Misc.
-# purl
 arrow
 requests
-# slugify
-# inflect
-# qrcode
 tabulate
 passlib
 bcrypt
-# python-magic
-# pillow
-# marshmallow

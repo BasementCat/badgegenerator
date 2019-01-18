@@ -1,5 +1,3 @@
-# from StringIO import StringIO
-
 from flask import (
     Blueprint,
     url_for,
